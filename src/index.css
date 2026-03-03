@@ -1,0 +1,66 @@
+* { box-sizing: border-box; }
+body, html { margin: 0; padding: 0; height: 100vh; background-color: #FAFAFA; font-family: 'Inter', sans-serif; overflow: hidden; user-select: none; }
+
+.app-container { display: flex; flex-direction: column; height: 100vh; }
+
+/* --- 公共顶部工具栏 --- */
+.header-toolbar {
+  height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E5E5;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 24px; flex-shrink: 0; z-index: 10;
+}
+.nav-group { display: flex; align-items: center; gap: 16px; font-size: 18px; font-weight: 600; color: #333; }
+.nav-btn { cursor: pointer; padding: 6px 14px; color: #666; border-radius: 8px; transition: 0.2s; font-size: 15px;}
+.nav-btn:hover { background: #F0F0F0; color: #111; }
+.tool-group { display: flex; align-items: center; gap: 8px; background: #F4F5F7; padding: 6px; border-radius: 12px; }
+
+/* 按钮与颜色选区状态 */
+.action-btn { padding: 8px 16px; border: none; border-radius: 8px; background: transparent; font-size: 14px; font-weight: 500; color: #666; cursor: pointer; transition: 0.2s; }
+.action-btn.active { background: #FFFFFF; color: #111; box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-weight: 600; }
+.color-btn { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);}
+.color-btn.active { transform: scale(1.15); border-color: #fff; box-shadow: 0 0 0 2px #333; }
+.color-picker-wrap { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; border: 1px solid #ccc; cursor: pointer; }
+.color-picker-wrap input { width: 200%; height: 200%; transform: translate(-25%, -25%); cursor: pointer; border: none; }
+.color-picker-wrap.active { border-color: transparent; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #007AFF; }
+
+/* --- 年历视图 (Year View) --- */
+.year-view-container { flex: 1; padding: 32px; overflow-y: auto; background: #F8F9FA; }
+.year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1400px; margin: 0 auto; }
+@media (max-width: 1200px) { .year-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px) { .year-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.mini-month { background: #FFF; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #EEE; cursor: pointer; transition: 0.2s; }
+.mini-month:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); border-color: #007AFF; }
+.mini-month-title { font-weight: 600; font-size: 15px; text-align: center; margin-bottom: 12px; color: #333; }
+.mini-days-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; color: #999; margin-bottom: 6px; }
+.mini-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.mini-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: #555; position: relative; border-radius: 4px; }
+.mini-day.empty { color: transparent; pointer-events: none; }
+.mini-day.today { background: #007AFF; color: #FFF; font-weight: bold; }
+/* 颜色热力点 */
+.mini-dots-container { display: flex; gap: 2px; position: absolute; bottom: 2px; justify-content: center; width: 100%; flex-wrap: wrap; padding: 0 2px;}
+.mini-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+/* --- 月历视图 (Month View) --- */
+.weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 12px 0; background: #FAFAFA; border-bottom: 1px solid #E5E5E5; font-size: 13px; color: #888; flex-shrink: 0; }
+.calendar-body { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+.calendar-row { display: grid; grid-template-columns: repeat(7, 1fr); position: relative; }
+.row-resizer { position: absolute; bottom: -5px; left: 0; right: 0; height: 10px; z-index: 20; cursor: row-resize; transition: 0.2s; }
+.row-resizer:hover, .row-resizer.dragging { background: rgba(0, 122, 255, 0.15); }
+
+/* 单个格子内脏 */
+.day-cell { border-right: 1px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; position: relative; background: #FFFFFF; display: flex; flex-direction: column; }
+.day-cell.empty { background: #FDFDFD; }
+.day-cell.today { background: #F0F7FF; }
+.date-num { position: absolute; top: 8px; right: 8px; font-size: 14px; color: #444; z-index: 5; pointer-events: none;}
+.date-num.today { color: #007AFF; font-weight: bold; }
+
+/* 一键清空按钮 */
+.clear-day-btn { position: absolute; top: 6px; left: 6px; font-size: 12px; padding: 4px 6px; border-radius: 4px; background: rgba(255,0,0,0.05); color: #FF3B30; cursor: pointer; z-index: 20; opacity: 0; transition: 0.2s; border: none; }
+.day-cell:hover .clear-day-btn { opacity: 1; }
+.clear-day-btn:hover { background: #FF3B30; color: #FFF; }
+
+.cell-canvas { position: absolute; inset: 0; z-index: 2; touch-action: none; cursor: crosshair; }
+.text-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.typed-text { position: absolute; font-size: 16px; pointer-events: auto; cursor: default; }
+.text-input-box { position: absolute; z-index: 10; background: rgba(255,255,255,0.95); border: 1px dashed #007AFF; outline: none; padding: 2px 4px; border-radius: 4px;}
